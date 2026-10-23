@@ -8,7 +8,8 @@ import httpx
 import pytest
 from crewai.tools.tool_failure import ToolFailure
 
-from decodo_crewai import DecodoSearchTool, DecodoWebScraperTool
+from decodo_crewai import DecodoEcommerceTool, DecodoSearchTool, DecodoSERPTool, DecodoWebScraperTool
+from decodo_crewai.ecommerce_tool import DecodoEcommerceArgs
 
 
 class FakeApi:
@@ -140,6 +141,96 @@ def test_empty_results_become_tool_failure(fake_api: FakeApi) -> None:
     assert result.code == "empty_response"
 
 
+def test_failed_task_becomes_retryable_tool_failure(fake_api: FakeApi) -> None:
+    fake_api.body = {"status": "failed", "status_code": 613, "message": "We were not able to scrape the target."}
+
+    result = DecodoWebScraperTool()._run(url="https://example.com")
+
+    assert isinstance(result, ToolFailure)
+    assert result.code == "613"
+    assert result.retryable is True
+    assert "We were not able to scrape the target." in result.message
+
+
+@pytest.mark.parametrize(
+    ("kwargs", "payload"),
+    [
+        (
+            {"store": "amazon", "product_id": "B09H74FXNW", "zip_code": "10001"},
+            {"target": "amazon_product", "query": "B09H74FXNW", "geo": "10001", "parse": True},
+        ),
+        (
+            {"store": "amazon", "query": "usb c cable"},
+            {"target": "amazon_search", "query": "usb c cable", "parse": True},
+        ),
+        (
+            {"store": "walmart", "product_id": "15296401808"},
+            {"target": "walmart_product", "product_id": "15296401808", "parse": True},
+        ),
+        (
+            {"store": "walmart", "query": "camping tent", "zip_code": "10001"},
+            {"target": "walmart_search", "query": "camping tent", "delivery_zip": "10001", "parse": True},
+        ),
+        (
+            {"store": "target", "product_id": "1003921355"},
+            {"target": "target_product", "product_id": "1003921355", "headless": "html", "parse": True},
+        ),
+        (
+            {"store": "target", "query": "camping tent"},
+            {"target": "target_search", "query": "camping tent", "headless": "html", "parse": True},
+        ),
+    ],
+)
+def test_ecommerce_requests(fake_api: FakeApi, kwargs: dict[str, Any], payload: dict[str, Any]) -> None:
+    content = {"title": "A product", "price": 9.99}
+    fake_api.body = {"results": [{"status_code": 200, "content": content}]}
+
+    result = DecodoEcommerceTool().run(**kwargs)
+
+    assert fake_api.payload == payload
+    assert json.loads(result) == content
+
+
+@pytest.mark.parametrize("kwargs", [{}, {"product_id": "B09H74FXNW", "query": "usb c cable"}])
+def test_ecommerce_needs_exactly_one_of_product_id_or_query(fake_api: FakeApi, kwargs: dict[str, Any]) -> None:
+    with pytest.raises(ValueError, match="either product_id or query"):
+        DecodoEcommerceArgs(store="amazon", **kwargs)
+
+    result = DecodoEcommerceTool()._run(store="amazon", **kwargs)
+
+    assert isinstance(result, ToolFailure)
+    assert result.code == "invalid_params"
+    assert not fake_api.calls
+
+
+@pytest.mark.parametrize(
+    ("kwargs", "payload"),
+    [
+        ({"query": "batteries"}, {"target": "google_search", "query": "batteries", "parse": True}),
+        (
+            {"query": "batteries", "page": 2, "geo": "Germany"},
+            {"target": "google_search", "query": "batteries", "geo": "Germany", "page_from": 2, "parse": True},
+        ),
+        (
+            {"query": "batteries", "engine": "bing", "page": 3},
+            {"target": "bing_search", "query": "batteries", "page_from": 3, "headless": "html", "parse": True},
+        ),
+        (
+            {"query": "what are batteries", "engine": "google_ai_mode", "page": 2},
+            {"target": "google_ai_mode", "query": "what are batteries", "parse": True},
+        ),
+    ],
+)
+def test_serp_requests(fake_api: FakeApi, kwargs: dict[str, Any], payload: dict[str, Any]) -> None:
+    content = {"results": {"organic": [{"title": "A"}]}}
+    fake_api.body = {"results": [{"status_code": 200, "content": content}]}
+
+    result = DecodoSERPTool().run(**kwargs)
+
+    assert fake_api.payload == payload
+    assert json.loads(result) == content
+
+
 @pytest.mark.live
 @pytest.mark.skipif(not os.environ.get("DECODO_LIVE_API_KEY"), reason="DECODO_LIVE_API_KEY not set")
 def test_live_scrape_and_search() -> None:
@@ -150,3 +241,9 @@ def test_live_scrape_and_search() -> None:
 
     results = DecodoSearchTool(api_key=api_key).run(query="decodo")
     assert isinstance(results, str) and json.loads(results)
+
+    product = DecodoEcommerceTool(api_key=api_key).run(store="walmart", product_id="15296401808")
+    assert isinstance(product, str) and json.loads(product)
+
+    answer = DecodoSERPTool(api_key=api_key).run(query="what are solid state batteries", engine="google_ai_mode")
+    assert isinstance(answer, str) and json.loads(answer)
