@@ -9,6 +9,8 @@
 | --- | --- |
 | `DecodoWebScraperTool` | Scrapes any public URL and returns the page as Markdown. |
 | `DecodoSearchTool` | Searches Google or Amazon and returns the parsed results as JSON. |
+| `DecodoEcommerceTool` | Gets product details or search results from Amazon, Walmart or Target as JSON. |
+| `DecodoSERPTool` | Gets Google or Bing results pages, with paging, or a Google AI Mode answer as JSON. |
 
 ## Requirements
 
@@ -98,6 +100,30 @@ Arguments the agent fills in:
 | `query` | `str` | Search query. |
 | `source` | `"google"` or `"amazon"`, optional | `google` (default) for web results, `amazon` for product listings. |
 | `geo` | `str`, optional | Google: a country name, e.g. `United States`. Amazon: a US ZIP code, e.g. `10001`, or a two-letter country code for delivery outside the US, e.g. `DE`. |
+
+### DecodoEcommerceTool
+
+Arguments the agent fills in. Pass either `product_id` or `query`:
+
+| Argument | Type | Description |
+| --- | --- | --- |
+| `store` | `"amazon"`, `"walmart"` or `"target"` | Store to look up. |
+| `product_id` | `str`, optional | One product's details. Amazon: the ASIN, e.g. `B09H74FXNW`. Walmart or Target: the product ID from the product URL. |
+| `query` | `str`, optional | Search the store's products instead. |
+| `zip_code` | `str`, optional | US ZIP code for prices and availability at that delivery location, e.g. `10001`. |
+
+### DecodoSERPTool
+
+Arguments the agent fills in:
+
+| Argument | Type | Description |
+| --- | --- | --- |
+| `query` | `str` | Search query. |
+| `engine` | `"google"`, `"bing"` or `"google_ai_mode"`, optional | `google` (default) or `bing` for a results page; `google_ai_mode` for Google's AI-written answer and the sources it cites. |
+| `page` | `int`, optional | Results page to fetch, starting at 1. Ignored by `google_ai_mode`. |
+| `geo` | `str`, optional | Country to search from, e.g. `United States`. |
+
+Bing results are rendered in a headless browser and can take over a minute.
 
 ## Errors
 

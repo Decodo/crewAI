@@ -77,6 +77,13 @@ class DecodoBaseTool(BaseTool):
 
         results = response.get("results") or []
         if not results:
+            failed: dict[str, Any] = dict(response)
+            if failed.get("message"):
+                return ToolFailure(
+                    message=f"Decodo could not scrape the target: {failed['message']}",
+                    code=str(failed.get("status_code", "scrape_failed")),
+                    retryable=True,
+                )
             return ToolFailure(message="Decodo returned no results.", code="empty_response")
 
         result = results[0]
