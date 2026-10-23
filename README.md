@@ -56,7 +56,7 @@ task = Task(
 )
 
 crew = Crew(agents=[researcher], tasks=[task])
-print(crew.kickoff(inputs={"topic": "web scraping APIs"}))
+print(crew.kickoff(inputs={"topic": "solid-state batteries"}))
 ```
 
 The tools can also be called directly:
@@ -67,6 +67,8 @@ from decodo_crewai import DecodoSearchTool, DecodoWebScraperTool
 print(DecodoWebScraperTool().run(url="https://ip.decodo.com"))
 print(DecodoSearchTool().run(query="mechanical keyboard", source="amazon"))
 ```
+
+For a complete multi-agent example, see the [research crew](examples/research_crew): a researcher, an analyst and a writer that turn any topic into a cited report.
 
 ## Tools
 
