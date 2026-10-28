@@ -8,13 +8,15 @@ version = "0.0.0"
 description = "Decodo Web Scraping API tools for CrewAI agents."
 readme = "README.md"
 license = { file = "LICENSE" }
-requires-python = ">=3.12,<3.14"
+requires-python = ">=3.10,<3.14"
 authors = [{ name = "Decodo", email = "support@decodo.com" }]
 keywords = ["decodo", "crewai", "web-scraping", "agents", "tools"]
 classifiers = [
     "Intended Audience :: Developers",
     "License :: OSI Approved :: MIT License",
     "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
     "Programming Language :: Python :: 3.13",
     "Topic :: Internet :: WWW/HTTP",
@@ -23,7 +25,8 @@ classifiers = [
 dependencies = [
     # ToolFailure first shipped in 1.15.9.
     "crewai>=1.15.9",
-    "decodo-sdk>=2.4.1",
+    # Python 3.10 and 3.11 support first shipped in 2.5.0.
+    "decodo-sdk>=2.5.0",
     "httpx>=0.27.0",
 ]
 
@@ -51,6 +54,7 @@ select = ["E", "F", "I", "UP"]
 
 [tool.mypy]
 strict = true
+python_version = "3.10"
 packages = ["decodo_crewai"]
 mypy_path = "src"
 

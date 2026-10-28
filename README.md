@@ -1,6 +1,6 @@
 # Decodo tools for CrewAI
 
-![Python](https://img.shields.io/badge/python-3.12%20%7C%203.13-green)
+![Python](https://img.shields.io/badge/python-3.10%20%E2%80%93%203.13-green)
 ![License](https://img.shields.io/badge/license-MIT-blue)
 
 [CrewAI](https://www.crewai.com) tools for the [Decodo](https://decodo.com) Web Scraping API. Give your agents live web pages and search results.
@@ -14,7 +14,7 @@
 
 ## Requirements
 
-- Python 3.12 or 3.13
+- Python 3.10 to 3.13
 - A Decodo Web Scraping API key
 
 ## Installation
