@@ -47,6 +47,20 @@ def test_missing_api_key_raises(monkeypatch: pytest.MonkeyPatch) -> None:
         DecodoWebScraperTool()
 
 
+def test_blank_api_key_raises(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setenv("DECODO_API_KEY", " \n")
+    with pytest.raises(ValueError, match="DECODO_API_KEY"):
+        DecodoWebScraperTool()
+
+
+@pytest.mark.parametrize("api_key", ["padded-key\n", " padded-key "])
+def test_api_key_whitespace_is_stripped(fake_api: FakeApi, monkeypatch: pytest.MonkeyPatch, api_key: str) -> None:
+    monkeypatch.setenv("DECODO_API_KEY", api_key)
+    DecodoWebScraperTool().run(url="https://example.com")
+    DecodoWebScraperTool(api_key=api_key).run(url="https://example.com")
+    assert [call["headers"]["Authorization"] for call in fake_api.calls] == ["Bearer padded-key"] * 2
+
+
 def test_api_key_argument_overrides_env(fake_api: FakeApi) -> None:
     DecodoWebScraperTool(api_key="explicit-key").run(url="https://example.com")
     assert fake_api.calls[0]["headers"]["Authorization"] == "Bearer explicit-key"
@@ -121,6 +135,45 @@ def test_api_errors_become_tool_failures(fake_api: FakeApi, status_code: int, co
     assert isinstance(result, ToolFailure)
     assert result.code == code
     assert result.retryable is retryable
+
+
+def test_network_errors_become_retryable_tool_failures(monkeypatch: pytest.MonkeyPatch) -> None:
+    def refuse(*args: Any, **kwargs: Any) -> httpx.Response:
+        raise httpx.ConnectError("Connection refused")
+
+    monkeypatch.setattr("decodo.http.httpx.request", refuse)
+
+    for tool, kwargs in [
+        (DecodoWebScraperTool(), {"url": "https://example.com"}),
+        (DecodoSearchTool(), {"query": "coffee"}),
+        (DecodoEcommerceTool(), {"store": "amazon", "query": "coffee"}),
+        (DecodoSERPTool(), {"query": "coffee"}),
+    ]:
+        result = tool.run(**kwargs)
+        assert isinstance(result, ToolFailure)
+        assert result.code == "network_error"
+        assert result.retryable is True
+        assert "Connection refused" in result.message
+
+
+@pytest.mark.parametrize(
+    "error",
+    [
+        httpx.LocalProtocolError("Illegal header value b'Bearer secret\\nkey'"),
+        UnicodeEncodeError("ascii", "Bearer secretkeyé", 16, 17, "ordinal not in range(128)"),
+    ],
+)
+def test_unsendable_api_key_is_not_echoed(monkeypatch: pytest.MonkeyPatch, error: Exception) -> None:
+    def reject_header(*args: Any, **kwargs: Any) -> httpx.Response:
+        raise error
+
+    monkeypatch.setattr("decodo.http.httpx.request", reject_header)
+
+    result = DecodoWebScraperTool().run(url="https://example.com")
+
+    assert isinstance(result, ToolFailure)
+    assert result.code == "invalid_request"
+    assert "secret" not in result.message
 
 
 def test_target_error_status_becomes_tool_failure(fake_api: FakeApi) -> None:

@@ -3,6 +3,7 @@ from __future__ import annotations
 import os
 from typing import Any
 
+import httpx
 from crewai.tools import BaseTool, EnvVar
 from crewai.tools.tool_failure import ToolFailure
 from decodo import (
@@ -44,7 +45,7 @@ class DecodoBaseTool(BaseTool):
 
     def __init__(self, api_key: str | None = None, **kwargs: Any) -> None:
         super().__init__(**kwargs)
-        api_key = api_key or os.environ.get(API_KEY_ENV_VAR)
+        api_key = (api_key or os.environ.get(API_KEY_ENV_VAR) or "").strip()
         if not api_key:
             raise ValueError(f"Pass api_key or set the {API_KEY_ENV_VAR} environment variable.")
         self._client = DecodoClient(
@@ -74,6 +75,13 @@ class DecodoBaseTool(BaseTool):
                 code=str(e.status_code),
                 retryable=e.status_code >= 500,
             )
+        except (httpx.LocalProtocolError, UnicodeEncodeError):
+            return ToolFailure(
+                message=f"The request to Decodo could not be sent. Check {API_KEY_ENV_VAR} for invalid characters.",
+                code="invalid_request",
+            )
+        except httpx.TransportError as e:
+            return ToolFailure(message=f"Could not reach Decodo: {e}", code="network_error", retryable=True)
 
         results = response.get("results") or []
         if not results:
