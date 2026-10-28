@@ -70,7 +70,7 @@ print(DecodoWebScraperTool().run(url="https://ip.decodo.com"))
 print(DecodoSearchTool().run(query="mechanical keyboard", source="amazon"))
 ```
 
-For a complete multi-agent example, see the [research crew](examples/research_crew): a researcher, an analyst and a writer that turn any topic into a cited report.
+For a complete multi-agent example, see the [research crew](https://github.com/Decodo/crewAI/tree/main/examples/research_crew): a researcher, an analyst and a writer that turn any topic into a cited report.
 
 ## Tools
 
@@ -127,7 +127,7 @@ Bing results are rendered in a headless browser and can take over a minute.
 
 ## Errors
 
-When a request fails, for example because of an invalid API key, a rate limit or a page that returns `404`, the tools return a CrewAI `ToolFailure` instead of raising. The agent sees what went wrong and can retry or change course, and CrewAI records the failure according to the agent's `tool_failure_policy`.
+When a request fails, for example because of an invalid API key, a rate limit, a page that returns `404` or a network error that keeps the request from reaching Decodo, the tools return a CrewAI `ToolFailure` instead of raising. The agent sees what went wrong and can retry or change course, and CrewAI records the failure according to the agent's `tool_failure_policy`.
 
 ## License
 
