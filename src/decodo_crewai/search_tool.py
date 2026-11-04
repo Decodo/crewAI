@@ -26,10 +26,10 @@ class DecodoSearchArgs(BaseModel):
 
 
 class DecodoSearchTool(DecodoBaseTool):
-    """Search Google or Amazon with the Decodo Web Scraping API and return the parsed results as JSON.
+    """Search Google or Amazon with the Decodo Web Data API and return the parsed results as JSON.
 
     Args:
-        api_key: Decodo Web Scraping API key. Defaults to the ``DECODO_API_KEY`` environment variable.
+        api_key: Decodo Web Data API key. Defaults to the ``DECODO_API_KEY`` environment variable.
     """
 
     name: str = "Decodo Search"

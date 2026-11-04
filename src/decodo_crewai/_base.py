@@ -26,7 +26,7 @@ INTEGRATION_HEADER = "crewai-python"
 class DecodoBaseTool(BaseTool):
     """Shared Decodo client and error handling for the Decodo tools.
 
-    Get an API key from your Web Scraping API subscription on the Decodo dashboard:
+    Get an API key from your Web Data API subscription on the Decodo dashboard:
     https://dashboard.decodo.com/web-data/playground
     """
 
@@ -35,7 +35,7 @@ class DecodoBaseTool(BaseTool):
         default_factory=lambda: [
             EnvVar(
                 name=API_KEY_ENV_VAR,
-                description="API key for the Decodo Web Scraping API",
+                description="API key for the Decodo Web Data API",
                 required=True,
             )
         ]
