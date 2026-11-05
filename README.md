@@ -3,7 +3,7 @@
 ![Python](https://img.shields.io/badge/python-3.10%20%E2%80%93%203.13-green)
 ![License](https://img.shields.io/badge/license-MIT-blue)
 
-[CrewAI](https://www.crewai.com) tools for the [Decodo Web Data API](https://help.decodo.com/docs/web-data-api-introduction). Give your agents live web pages and search results.
+[Decodo Web Data API](https://help.decodo.com/docs/web-data-api-introduction) tools for [CrewAI](https://www.crewai.com). Give your agents live web pages and search results.
 
 | Tool | What it does |
 | --- | --- |
