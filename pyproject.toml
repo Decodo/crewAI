@@ -5,7 +5,7 @@ build-backend = "hatchling.build"
 [project]
 name = "decodo-crewai"
 version = "0.0.0"
-description = "Decodo Web Scraping API tools for CrewAI agents."
+description = "Decodo Web Data API tools for CrewAI agents."
 readme = "README.md"
 license = { file = "LICENSE" }
 requires-python = ">=3.10,<3.14"

@@ -20,10 +20,10 @@ class DecodoWebScraperArgs(BaseModel):
 
 
 class DecodoWebScraperTool(DecodoBaseTool):
-    """Scrape any public web page with the Decodo Web Scraping API and return it as Markdown.
+    """Scrape any public web page with the Decodo Web Data API and return it as Markdown.
 
     Args:
-        api_key: Decodo Web Scraping API key. Defaults to the ``DECODO_API_KEY`` environment variable.
+        api_key: Decodo Web Data API key. Defaults to the ``DECODO_API_KEY`` environment variable.
         max_chars: Markdown longer than this is truncated, to keep the page within the agent's context.
     """
 

@@ -3,7 +3,7 @@
 ![Python](https://img.shields.io/badge/python-3.10%20%E2%80%93%203.13-green)
 ![License](https://img.shields.io/badge/license-MIT-blue)
 
-[CrewAI](https://www.crewai.com) tools for the [Decodo](https://decodo.com) Web Scraping API. Give your agents live web pages and search results.
+[Decodo Web Data API](https://help.decodo.com/docs/web-data-api-introduction) tools for [CrewAI](https://www.crewai.com). Give your agents live web pages and search results.
 
 | Tool | What it does |
 | --- | --- |
@@ -15,7 +15,7 @@
 ## Requirements
 
 - Python 3.10 to 3.13
-- A Decodo Web Scraping API key
+- A Decodo Web Data API key. Basic authentication tokens from older plans don't work with these tools.
 
 ## Installation
 
@@ -25,7 +25,7 @@ pip install decodo-crewai
 
 ## Credentials
 
-Copy your API key from your Web Scraping API subscription on the [Decodo dashboard](https://dashboard.decodo.com/web-data/playground) and set it as an environment variable:
+Copy your API key from your Web Data API subscription on the [Decodo dashboard](https://dashboard.decodo.com/web-data/playground) and set it as an environment variable:
 
 ```bash
 export DECODO_API_KEY="<api_key>"
@@ -88,7 +88,7 @@ Constructor options:
 
 | Option | Default | Description |
 | --- | --- | --- |
-| `api_key` | `DECODO_API_KEY` | Decodo Web Scraping API key. |
+| `api_key` | `DECODO_API_KEY` | Decodo Web Data API key. |
 | `max_chars` | `45000` | Markdown longer than this is truncated to keep the page within the agent's context. |
 
 ### DecodoSearchTool
@@ -111,6 +111,8 @@ Arguments the agent fills in. Pass either `product_id` or `query`:
 | `product_id` | `str`, optional | One product's details. Amazon: the ASIN, e.g. `B09H74FXNW`. Walmart or Target: the product ID from the product URL. |
 | `query` | `str`, optional | Search the store's products instead. |
 | `zip_code` | `str`, optional | US ZIP code for prices and availability at that delivery location, e.g. `10001`. |
+
+Target pages are rendered in a headless browser and can take close to a minute.
 
 ### DecodoSERPTool
 

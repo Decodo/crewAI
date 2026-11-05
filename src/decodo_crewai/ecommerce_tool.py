@@ -46,7 +46,7 @@ class DecodoEcommerceTool(DecodoBaseTool):
     """Get product details or search results from Amazon, Walmart or Target, parsed as JSON.
 
     Args:
-        api_key: Decodo Web Scraping API key. Defaults to the ``DECODO_API_KEY`` environment variable.
+        api_key: Decodo Web Data API key. Defaults to the ``DECODO_API_KEY`` environment variable.
     """
 
     name: str = "Decodo Ecommerce"

@@ -27,7 +27,7 @@ DECODO_API_KEY=<decodo_api_key>
 OPENAI_API_KEY=<openai_api_key>
 ```
 
-Get the Decodo API key from your Web Scraping API subscription on the [Decodo dashboard](https://dashboard.decodo.com/web-data/playground).
+Get the Decodo API key from your Web Data API subscription on the [Decodo dashboard](https://dashboard.decodo.com/web-data/playground).
 
 The crew uses CrewAI's default model, `gpt-4.1-mini`. To use another model, set `MODEL`, e.g. `MODEL=gpt-4.1`. Other providers need their CrewAI extra and key, e.g. `pip install "crewai[anthropic]"`, `ANTHROPIC_API_KEY` and `MODEL=anthropic/<model>`.
 

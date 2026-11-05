@@ -32,7 +32,7 @@ class DecodoSERPTool(DecodoBaseTool):
     """Search Google or Bing, or ask Google AI Mode, and return the parsed results as JSON.
 
     Args:
-        api_key: Decodo Web Scraping API key. Defaults to the ``DECODO_API_KEY`` environment variable.
+        api_key: Decodo Web Data API key. Defaults to the ``DECODO_API_KEY`` environment variable.
     """
 
     name: str = "Decodo SERP"
